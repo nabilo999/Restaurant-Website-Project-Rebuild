@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect , useState } from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 
@@ -19,7 +19,6 @@ const Index = () => {
       <Gallery />
       <About />
       <Contact />
-      <Cart />
       <Footer />
     </>
   );
@@ -71,83 +70,132 @@ const Menu = () => {
   );
 };
 
-const Gallery = () => {
+function Gallery() {
   const slidesRef = useRef(null);
   const indexRef = useRef(0);
 
-  const showSlide = (i) => {
+  const [cartOpen, setCartOpen] = useState(false);
+  const [cartItems, setCartItems] = useState([]);
+  const [selectedItem, setSelectedItem] = useState(null);
+
+  function ShowSlide(i) {
     const slides = slidesRef.current;
     if (!slides) return;
 
     const images = slides.querySelectorAll("img");
-    if (images.length === 0) return;
-
     if (i >= images.length) indexRef.current = 0;
     if (i < 0) indexRef.current = images.length - 1;
 
-    slides.style.transform = `translateX(-${indexRef.current * 100}%)`;
-  };
+    slides.style.transform = "translateX(-" + indexRef.current * 100 + "%)";
+  }
 
-  const next = () => {
-    indexRef.current++;
-    showSlide(indexRef.current);
-  };
+  function Next() {
+    indexRef.current = indexRef.current + 1;
+    ShowSlide(indexRef.current);
+  }
 
-  const prev = () => {
-    indexRef.current--;
-    showSlide(indexRef.current);
-  };
+  function Prev() {
+    indexRef.current = indexRef.current - 1;
+    ShowSlide(indexRef.current);
+  }
 
-  useEffect(() => {
-    showSlide(0);
+  useEffect(function () {
+    ShowSlide(0);
   }, []);
+
+  function handleSelect(e) {
+    var name = e.target.alt;
+    var price = Number(e.target.dataset.price);
+    setSelectedItem({ name: name, price: price });
+  }
+
+  function addToCart() {
+    if (!selectedItem) {
+      alert("Select an item first!");
+      return;
+    }
+
+    // old-school array concat, no spread
+    var newCart = cartItems.concat(selectedItem);
+    setCartItems(newCart);
+    setCartOpen(true);
+  }
+
+  function clearCart() {
+    setCartItems([]);
+  }
+
+  function closeCart() {
+    setCartOpen(false);
+  }
+
+  var total = 0;
+  for (var i = 0; i < cartItems.length; i++) {
+    total = total + cartItems[i].price;
+  }
 
   return (
     <div>
-      <h2 className="test">Image Gallery</h2>
+      <h2>Image Gallery</h2>
+
       <section className="gallery-slider">
         <div className="slider-container">
-          <div className="slides" ref={slidesRef}>
+          <div className="slides" ref={slidesRef} onClick={handleSelect}>
             <img src={burger} alt="Burger" data-price="11" />
             <img src={pie} alt="Pie" data-price="5" />
             <img src={coffee} alt="Coffee" data-price="4" />
             <img src={fries} alt="Fries" data-price="6" />
-            <img src={milk} alt="Milk-shake" data-price="3" />
+            <img src={milk} alt="Milkshake" data-price="3" />
             <img src={pancakes} alt="Pancakes" data-price="7" />
           </div>
-          <button className="prev" onClick={prev}>
+
+          <button className="prev" onClick={Prev}>
             &lt;
           </button>
-          <button className="next" onClick={next}>
+          <button className="next" onClick={Next}>
             &gt;
           </button>
         </div>
-        <button id="addToCartBtn" className="add-to-cart">
+
+        <button className="add-to-cart" onClick={addToCart}>
           Add to Cart
         </button>
       </section>
-    </div>
-  );
-};
 
-const Cart = () => {
-  return (
-    <div>
-      <div className="cart-icon" id="cartIcon">
+      <div className="cart-icon" onClick={function () { setCartOpen(true); }}>
         🛒
       </div>
-      <div className="cart-panel" id="cartPanel">
-        <h3>Your Cart</h3>
-        <ul id="cartItems"></ul>
-        <div id="cartTotal">
-          <strong>Total:</strong> $0.00
+
+      {/* Simple if/else instead of fancy syntax */}
+      {cartOpen ? (
+        <div className="cart-panel">
+          <h3>Your Cart</h3>
+
+          {cartItems.length === 0 ? (
+            <p>No items yet.</p>
+          ) : (
+            <ul>
+              {cartItems.map(function (item, index) {
+                return (
+                  <li key={index}>
+                    {item.name} - ${item.price}
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+
+          <div>
+            <strong>Total:</strong> ${total.toFixed(2)}
+          </div>
+
+          <button onClick={clearCart}>Clear Cart</button>
+          <button onClick={closeCart}>Close</button>
         </div>
-        <button id="clearCart">Clear Cart</button>
-        <button id="closeCart">Close</button>
-      </div>
+      ) : null}
     </div>
   );
-};
+}
 
 const About = () => {
   return (
