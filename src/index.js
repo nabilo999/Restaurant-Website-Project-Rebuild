@@ -71,6 +71,8 @@ const Menu = () => {
   );
 };
 
+const cartItemsStore = []; // persistent array
+
 const Gallery = () => {
   const slidesRef = useRef(null);
   const indexRef = useRef(0);
@@ -99,8 +101,27 @@ const Gallery = () => {
   };
 
   useEffect(() => {
-    showSlide(0);
+  showSlide(0);
+
+  const addBtn = document.getElementById("addToCartBtn");
+  const slides = slidesRef.current;
+
+  addBtn.onclick = () => {
+    const images = slides.querySelectorAll("img");
+    const currentImg = images[indexRef.current];
+
+    const item = {
+      name: currentImg.alt,
+      price: Number(currentImg.dataset.price)
+    };
+
+    cartItemsStore.push(item);
+
+    alert("Item added: " + JSON.stringify(item));
+    alert("Current cart: " + JSON.stringify(cartItemsStore));
+    };
   }, []);
+
 
   return (
     <div>
@@ -130,6 +151,7 @@ const Gallery = () => {
   );
 };
 
+
 const Cart = () => {
   useEffect(() => {
     const cartIcon = document.getElementById("cartIcon");
@@ -138,32 +160,50 @@ const Cart = () => {
 
     if (!cartIcon || !cartPanel || !closeCart) return;
 
-    // OPEN CART
     cartIcon.onclick = () => {
       cartPanel.style.opacity = "1";
       cartPanel.style.pointerEvents = "auto";
       cartPanel.style.right = "0";
+      renderCart(); // refresh items every time cart opens
     };
 
-    // CLOSE CART
     closeCart.onclick = () => {
       cartPanel.style.opacity = "0";
       cartPanel.style.pointerEvents = "none";
       cartPanel.style.right = "-320px";
     };
   }, []);
+
+  function renderCart() {
+    const cartList = document.getElementById("cartItems");
+    if (!cartList) return;
+
+    cartList.innerHTML = "";
+
+    cartItemsStore.forEach((item, index) => {
+      const li = document.createElement("li");
+      li.innerHTML = `
+        ${item.name} - $${item.price}
+        <button class="remove" data-index="${index}">Remove</button>
+      `;
+      cartList.appendChild(li);
+    });
+
+    document.querySelectorAll(".remove").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        const i = e.target.getAttribute("data-index");
+        cartItemsStore.splice(i, 1);
+        renderCart();
+      });
+    });
+  }
+
   return (
     <div>
-      <div className="cart-icon" id="cartIcon">
-        🛒
-      </div>
+      <div className="cart-icon" id="cartIcon">🛒</div>
       <div className="cart-panel" id="cartPanel">
         <h3>Your Cart</h3>
         <ul id="cartItems"></ul>
-        <div id="cartTotal">
-          <strong>Total:</strong> $0.00
-        </div>
-        <button id="clearCart">Clear Cart</button>
         <button id="closeCart">Close</button>
       </div>
     </div>
