@@ -1,0 +1,21 @@
+{
+  "files": {
+    "main.css": "/nabilo999/Restaurant-Website-Project-Rebuild/static/css/main.d1b6a504.css",
+    "main.js": "/nabilo999/Restaurant-Website-Project-Rebuild/static/js/main.88ed8a48.js",
+    "static/media/fries.png": "/nabilo999/Restaurant-Website-Project-Rebuild/static/media/fries.dbd8c54daf58f398b97e.png",
+    "static/media/pie.png": "/nabilo999/Restaurant-Website-Project-Rebuild/static/media/pie.91fe612307f8f23aa7b7.png",
+    "static/media/coffee.png": "/nabilo999/Restaurant-Website-Project-Rebuild/static/media/coffee.5cefba4ac818653d79e1.png",
+    "static/media/milk.png": "/nabilo999/Restaurant-Website-Project-Rebuild/static/media/milk.3bf74c0d020e3f78691f.png",
+    "static/media/burger.png": "/nabilo999/Restaurant-Website-Project-Rebuild/static/media/burger.a08dc046eb0844afe59c.png",
+    "static/media/pancakes.png": "/nabilo999/Restaurant-Website-Project-Rebuild/static/media/pancakes.21d973165dacba391a23.png",
+    "static/media/banner2.jpg": "/nabilo999/Restaurant-Website-Project-Rebuild/static/media/banner2.be222b459100941f598e.jpg",
+    "static/media/logo3.png": "/nabilo999/Restaurant-Website-Project-Rebuild/static/media/logo3.9c22c58ebfa173bcd75a.png",
+    "index.html": "/nabilo999/Restaurant-Website-Project-Rebuild/index.html",
+    "main.d1b6a504.css.map": "/nabilo999/Restaurant-Website-Project-Rebuild/static/css/main.d1b6a504.css.map",
+    "main.88ed8a48.js.map": "/nabilo999/Restaurant-Website-Project-Rebuild/static/js/main.88ed8a48.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.d1b6a504.css",
+    "static/js/main.88ed8a48.js"
+  ]
+}
