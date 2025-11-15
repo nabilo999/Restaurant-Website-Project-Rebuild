@@ -116,9 +116,8 @@ const Gallery = () => {
     };
 
     cartItemsStore.push(item);
+    if (window.renderCart) window.renderCart(); // rerender when item added
 
-    alert("Item added: " + JSON.stringify(item));
-    alert("Current cart: " + JSON.stringify(cartItemsStore));
     };
   }, []);
 
@@ -151,6 +150,7 @@ const Gallery = () => {
   );
 };
 
+window.renderCart = () => {};
 
 const Cart = () => {
   useEffect(() => {
@@ -172,10 +172,18 @@ const Cart = () => {
       cartPanel.style.pointerEvents = "none";
       cartPanel.style.right = "-320px";
     };
+
+    const clearBtn = document.getElementById("clearCart");
+    clearBtn.onclick = () => {
+      cartItemsStore.length = 0; // empty array
+      renderCart();
+    };
   }, []);
 
   function renderCart() {
     const cartList = document.getElementById("cartItems");
+    const totalBox = document.getElementById("cartTotal");
+
     if (!cartList) return;
 
     cartList.innerHTML = "";
@@ -184,7 +192,7 @@ const Cart = () => {
       const li = document.createElement("li");
       li.innerHTML = `
         ${item.name} - $${item.price}
-        <button class="remove" data-index="${index}">Remove</button>
+        <button class="remove remove-item" data-index="${index}">✖</button>
       `;
       cartList.appendChild(li);
     });
@@ -196,6 +204,13 @@ const Cart = () => {
         renderCart();
       });
     });
+
+    // ---- TOTAL CALCULATION ----
+    const total = cartItemsStore.reduce((sum, item) => sum + item.price, 0);
+    totalBox.innerHTML = `<strong>Total:</strong> $${total.toFixed(2)}`;
+
+    // allow other components to call this
+    window.renderCart = renderCart;
   }
 
   return (
@@ -204,6 +219,8 @@ const Cart = () => {
       <div className="cart-panel" id="cartPanel">
         <h3>Your Cart</h3>
         <ul id="cartItems"></ul>
+        <div id="cartTotal"><strong>Total:</strong> $0.00</div>
+        <button id="clearCart">Clear Cart</button>
         <button id="closeCart">Close</button>
       </div>
     </div>
