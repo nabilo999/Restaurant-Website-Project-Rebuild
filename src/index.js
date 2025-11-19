@@ -1,7 +1,5 @@
-import React, { useRef, useEffect , useState } from "react";
+import React, { useRef, useEffect } from "react";
 import ReactDOM from "react-dom/client";
-import "./index.css";
-
 import burger from "./images/burger.png";
 import pie from "./images/pie.png";
 import coffee from "./images/coffee.png";
@@ -9,10 +7,11 @@ import fries from "./images/fries.png";
 import milk from "./images/milk.png";
 import pancakes from "./images/pancakes.png";
 import logo from "./images/logo3.png";
+import bannerBg from "./images/banner2.jpg"; 
 
 const Index = () => {
   return (
-    <>
+    <div className="font-sans m-0 p-0 bg-[#fdfdfd] text-[#333]">
       <Header />
       <Banner />
       <Menu />
@@ -21,57 +20,81 @@ const Index = () => {
       <About />
       <Contact />
       <Footer />
-    </>
+    </div>
   );
 };
 
 const Header = () => {
   return (
-    <header>
-      <img className="logo" src={logo} alt="logo" />
-      <nav>
-        <a href="#home">Home</a>
-        <a href="#menu">Menu</a>
-        <a href="#about">About</a>
-        <a href="#contact">Contact</a>
+    <header className="bg-[#111] text-white p-4 flex flex-col md:flex-row items-start md:items-center justify-between">
+      <img className="h-[120px] w-[110px] object-contain" src={logo} alt="logo" />
+      <nav className="flex flex-wrap gap-4 mt-4 md:mt-0">
+        {["Home", "Menu", "About", "Contact"].map((item) => (
+          <a 
+            key={item}
+            href={`#${item.toLowerCase()}`} 
+            className="text-white no-underline px-2 md:px-4 text-base md:text-lg"
+          >
+            {item}
+          </a>
+        ))}
       </nav>
     </header>
   );
 };
 
 const Banner = () => {
-  return <section id="home" className="hero"></section>;
+  return (
+    <section id="home" className="h-[220px] md:h-[450px] flex items-center justify-center text-white text-2xl md:text-5xl font-bold bg-cover bg-center text-center p-4" style={{ backgroundImage: `url(${bannerBg})` }}></section>
+  );
 };
 
 const Menu = () => {
   return (
-    <section id="menu" className="menu">
-      <h2>Menu</h2>
-      <div className="menu-section">
-        <div>
-          <h3>Breakfast</h3>
-          <p>Pancakes with Syrup - $7</p>
-          <p>French Toast - $8</p>
-          <p>Omelette with Cheese - $9</p>
-        </div>
-        <div>
-          <h3>Main Course</h3>
-          <p>Classic Cheeseburger - $11</p>
-          <p>Grilled Chicken Sandwich - $10</p>
-          <p>Meatloaf with Mashed Potatoes - $13</p>
-        </div>
-        <div>
-          <h3>Desserts</h3>
-          <p>Apple Pie - $5</p>
-          <p>Milkshake (Vanilla, Chocolate, Strawberry) - $6</p>
-          <p>Ice Cream Sundae - $5</p>
-        </div>
+    <section id="menu" className="p-5 md:p-10">
+      <h2 className="text-2xl md:text-3xl mb-5 font-bold">Menu</h2>
+      <div className="flex flex-col md:flex-row gap-8">
+        {[
+          { 
+            title: "Breakfast", 
+            items: [
+              { name: "Pancakes with Syrup", price: 7 },
+              { name: "French Toast", price: 8 },
+              { name: "Omelette with Cheese", price: 9 }
+            ]
+          },
+          { 
+            title: "Main Course", 
+            items: [
+              { name: "Classic Cheeseburger", price: 11 },
+              { name: "Grilled Chicken Sandwich", price: 10 },
+              { name: "Meatloaf with Mashed Potatoes", price: 13 }
+            ]
+          },
+          { 
+            title: "Desserts", 
+            items: [
+              { name: "Apple Pie", price: 5 },
+              { name: "Milkshake (Vanilla, Chocolate, Strawberry)", price: 6 },
+              { name: "Ice Cream Sundae", price: 5 }
+            ]
+          }
+        ].map((section, idx) => (
+          <div key={idx} className="bg-[#f5f5f5] p-4 rounded-lg flex-1">
+            <h3 className="text-xl font-bold mb-2 border-b pb-2">{section.title}</h3>
+            {section.items.map((item, i) => (
+              <p key={i} className="py-1 text-sm md:text-base">
+                {item.name} - ${item.price}
+              </p>
+            ))}
+          </div>
+        ))}
       </div>
     </section>
   );
 };
 
-const cartItemsStore = []; // persistent array
+const cartItemsStore = []; 
 
 const Gallery = () => {
   const slidesRef = useRef(null);
@@ -101,49 +124,60 @@ const Gallery = () => {
   };
 
   useEffect(() => {
-  showSlide(0);
+    showSlide(0);
 
-  const addBtn = document.getElementById("addToCartBtn");
-  const slides = slidesRef.current;
+    const addBtn = document.getElementById("addToCartBtn");
+    const slides = slidesRef.current;
 
-  addBtn.onclick = () => {
-    const images = slides.querySelectorAll("img");
-    const currentImg = images[indexRef.current];
+    if(addBtn && slides) {
+        addBtn.onclick = () => {
+        const images = slides.querySelectorAll("img");
+        const currentImg = images[indexRef.current];
 
-    const item = {
-      name: currentImg.alt,
-      price: Number(currentImg.dataset.price)
-    };
+        const item = {
+            name: currentImg.alt,
+            price: Number(currentImg.getAttribute("data-price"))
+        };
 
-    cartItemsStore.push(item);
-    if (window.renderCart) window.renderCart(); // rerender when item added
-
-    };
+        cartItemsStore.push(item);
+        if (window.renderCart) window.renderCart(); // rerender when item added
+        };
+    }
   }, []);
 
-
   return (
-    <div>
-      <h2 className="test">Image Gallery</h2>
-      <section className="gallery-slider">
-        <div className="slider-container">
-          <div className="slides" ref={slidesRef}>
-            <img src={burger} alt="Burger" data-price="11" />
-            <img src={pie} alt="Pie" data-price="5" />
-            <img src={coffee} alt="Coffee" data-price="4" />
-            <img src={fries} alt="Fries" data-price="6" />
-            <img src={milk} alt="Milk-shake" data-price="3" />
-            <img src={pancakes} alt="Pancakes" data-price="7" />
-          </div>
-          <button className="prev" onClick={prev}>
+    <div className="pb-10">
+      <h2 className="pl-8 text-2xl font-bold mb-5">Image Gallery</h2>
+      
+      <section className="relative w-[90%] max-w-[900px] mx-auto rounded-xl">
+        <div className="relative w-full md:w-3/5 mx-auto overflow-hidden rounded-lg bg-gray-200">
+            <div className="flex transition-transform duration-300 ease-out" ref={slidesRef}>
+                <img src={burger} alt="Burger" data-price="11" className="w-full flex-shrink-0 rounded-lg" />
+                <img src={pie} alt="Pie" data-price="5" className="w-full flex-shrink-0 rounded-lg" />
+                <img src={coffee} alt="Coffee" data-price="4" className="w-full flex-shrink-0 rounded-lg" />
+                <img src={fries} alt="Fries" data-price="6" className="w-full flex-shrink-0 rounded-lg" />
+                <img src={milk} alt="Milk-shake" data-price="3" className="w-full flex-shrink-0 rounded-lg" />
+                <img src={pancakes} alt="Pancakes" data-price="7" className="w-full flex-shrink-0 rounded-lg" />
+            </div>
+            <button 
+                className="absolute top-1/2 left-2 -translate-y-1/2 bg-black/50 text-white rounded-full p-2 w-10 h-10 flex items-center justify-center hover:bg-black cursor-pointer z-10" 
+                onClick={prev}
+            >
             &lt;
-          </button>
-          <button className="next" onClick={next}>
+            </button>
+            <button 
+                className="absolute top-1/2 right-2 -translate-y-1/2 bg-black/50 text-white rounded-full p-2 w-10 h-10 flex items-center justify-center hover:bg-black cursor-pointer z-10" 
+                onClick={next}
+            >
             &gt;
-          </button>
+            </button>
         </div>
-        <button id="addToCartBtn" className="add-to-cart">
-          Add to Cart
+
+        <button 
+            id="addToCartBtn" 
+            className="block mx-auto mt-5 px-5 py-3 bg-[#111] text-white rounded hover:bg-[#333] transition-colors cursor-pointer"
+        >
+            Add to Cart
         </button>
       </section>
     </div>
@@ -164,7 +198,7 @@ const Cart = () => {
       cartPanel.style.opacity = "1";
       cartPanel.style.pointerEvents = "auto";
       cartPanel.style.right = "0";
-      renderCart(); // refresh items every time cart opens
+      renderCart(); 
     };
 
     closeCart.onclick = () => {
@@ -174,10 +208,12 @@ const Cart = () => {
     };
 
     const clearBtn = document.getElementById("clearCart");
-    clearBtn.onclick = () => {
-      cartItemsStore.length = 0; // empty array
-      renderCart();
-    };
+    if (clearBtn) {
+        clearBtn.onclick = () => {
+            cartItemsStore.length = 0; 
+            renderCart();
+        };
+    }
   }, []);
 
   function renderCart() {
@@ -190,9 +226,10 @@ const Cart = () => {
 
     cartItemsStore.forEach((item, index) => {
       const li = document.createElement("li");
+      li.className = "flex justify-between items-center py-2 border-b border-gray-200 text-sm";
       li.innerHTML = `
         ${item.name} - $${item.price}
-        <button class="remove remove-item" data-index="${index}">✖</button>
+        <button class="remove remove-item text-red-600 font-bold cursor-pointer hover:text-red-800" data-index="${index}">✖</button>
       `;
       cartList.appendChild(li);
     });
@@ -205,34 +242,51 @@ const Cart = () => {
       });
     });
 
-    // ---- TOTAL CALCULATION ----
     const total = cartItemsStore.reduce((sum, item) => sum + item.price, 0);
     totalBox.innerHTML = `<strong>Total:</strong> $${total.toFixed(2)}`;
 
-    // allow other components to call this
     window.renderCart = renderCart;
   }
 
   return (
     <div>
-      <div className="cart-icon" id="cartIcon">🛒</div>
-      <div className="cart-panel" id="cartPanel">
-        <h3>Your Cart</h3>
-        <ul id="cartItems"></ul>
-        <div id="cartTotal"><strong>Total:</strong> $0.00</div>
-        <button id="clearCart">Clear Cart</button>
-        <button id="closeCart">Close</button>
+      <div 
+        id="cartIcon" 
+        className="fixed top-1/2 right-5 bg-[#ccccccce] text-white text-2xl p-4 rounded-2xl cursor-pointer z-50 shadow-md hover:scale-105 transition-transform"
+      >🛒</div>
+      <div 
+        id="cartPanel" 
+        className="fixed top-0 -right-[320px] w-[300px] h-full bg-white shadow-2xl p-5 z-50 transition-all duration-300 opacity-0 pointer-events-none overflow-y-auto"
+      >
+        <h3 className="text-xl font-bold mt-0 mb-4">Your Cart</h3>
+        <ul id="cartItems" className="list-none p-0 m-0"></ul>
+        
+        <div id="cartTotal" className="mt-4 pt-2 border-t border-gray-300 text-right text-lg font-bold">
+            <strong>Total:</strong> $0.00
+        </div>
+        
+        <button 
+            id="clearCart" 
+            className="w-full mt-3 p-2 bg-red-700 text-white rounded hover:bg-red-800 cursor-pointer"
+        >
+            Clear Cart
+        </button>
+        <button 
+            id="closeCart" 
+            className="w-full mt-3 p-2 bg-[#111] text-white rounded hover:bg-[#333] cursor-pointer"
+        >
+            Close
+        </button>
       </div>
     </div>
   );
 };
 
-
 const About = () => {
   return (
-    <section id="about" className="about">
-      <h2>About</h2>
-      <p>
+    <section id="about" className="p-5 md:p-10 bg-[#fafafa]">
+      <h2 className="text-2xl font-bold mb-4">About</h2>
+      <p className="leading-relaxed max-w-4xl">
         <strong>Our restaurant</strong> has been serving delicious cuisine since{" "}
         <strong>2009</strong>. We specialize in traditional dishes made with
         fresh, local ingredients. Our mission is to provide a warm and inviting
@@ -244,24 +298,43 @@ const About = () => {
 
 const Contact = () => {
   return (
-    <section id="contact" className="contact">
-      <div className="map">
+    <section id="contact" className="p-5 md:p-10 flex flex-col md:flex-row gap-5">
+      <div className="w-full md:w-1/2">
         <iframe
           src="https://www.google.com/maps?q=Hunter+College,+695+Park+Ave,+New+York,+NY+10065&output=embed"
-          width="400"
-          height="300"
+          className="w-full h-[300px] border-none rounded-md shadow-sm"
           allowFullScreen
           loading="lazy"
           referrerPolicy="no-referrer-when-downgrade"
           title="map"
         ></iframe>
       </div>
-      <form>
-        <h2>Contact Us</h2>
-        <input type="text" name="name" placeholder="Name" required />
-        <input type="text" name="email" placeholder="Email" required />
-        <textarea name="text" placeholder="Message" rows="5" required></textarea>
-        <button>Send</button>
+      <form className="w-full md:w-1/2 flex flex-col gap-3">
+        <h2 className="text-2xl font-bold mb-2">Contact Us</h2>
+        <input 
+            type="text" 
+            name="name" 
+            placeholder="Name" 
+            required 
+            className="p-3 border border-gray-300 rounded w-full" 
+        />
+        <input 
+            type="text" 
+            name="email" 
+            placeholder="Email" 
+            required 
+            className="p-3 border border-gray-300 rounded w-full" 
+        />
+        <textarea 
+            name="text" 
+            placeholder="Message" 
+            rows="5" 
+            required 
+            className="p-3 border border-gray-300 rounded w-full"
+        ></textarea>
+        <button className="p-3 bg-[#111] text-white rounded cursor-pointer hover:bg-[#333]">
+            Send
+        </button>
       </form>
     </section>
   );
@@ -269,11 +342,11 @@ const Contact = () => {
 
 const Footer = () => {
   return (
-    <footer>
-      <p>
-        Follow us: <a href="#">Facebook</a> | <a href="#">Instagram</a>
+    <footer className="bg-[#111] text-white p-5 text-center">
+      <p className="mb-2">
+        Follow us: <a href="#" className="text-white mx-2">Facebook</a> | <a href="#" className="text-white mx-2">Instagram</a>
       </p>
-      <p>Business Hours: Mon-Sun 10am - 10pm</p>
+      <p className="text-gray-400 text-sm">Business Hours: Mon-Sun 10am - 10pm</p>
     </footer>
   );
 };
