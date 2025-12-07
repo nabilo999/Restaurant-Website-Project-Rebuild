@@ -1,5 +1,7 @@
-import React, { useRef, useEffect } from "react";
-import ReactDOM from "react-dom/client";
+import React, { useState, useEffect, useRef } from "react";
+import { fetchMenu } from "./api";import ReactDOM from "react-dom/client";
+import { saveCart, loadCart } from "./api";
+
 import burger from "./images/burger.png";
 import pie from "./images/pie.png";
 import coffee from "./images/coffee.png";
@@ -8,6 +10,16 @@ import milk from "./images/milk.png";
 import pancakes from "./images/pancakes.png";
 import logo from "./images/logo3.png";
 import bannerBg from "./images/banner2.jpg"; 
+
+//helper
+function getCartId() {
+  let id = localStorage.getItem("cartId");
+  if (!id) {
+    id = "cart_" + Math.random().toString(36).slice(2);
+    localStorage.setItem("cartId", id);
+  }
+  return id;
+}
 
 const Index = () => {
   return (
@@ -50,36 +62,43 @@ const Banner = () => {
 };
 
 const Menu = () => {
+  const [menuItems, setMenuItems] = useState([]);
+  useEffect(() => {
+    let mounted = true;
+    fetchMenu()
+      .then(items => {
+        if (!mounted) return;
+        // group items by category for the same visual structure
+        const grouped = {};
+        items.forEach(it => {
+          const cat = it.category || "Uncategorized";
+          if (!grouped[cat]) grouped[cat] = [];
+          grouped[cat].push(it);
+        });
+        // convert to array format used previously
+        const arr = Object.keys(grouped).map(cat => ({ title: cat, items: grouped[cat] }));
+        setMenuItems(arr);
+      })
+      .catch(err => {
+        console.error("Menu fetch error", err);
+        // fallback: keep original static menu if fetch fails
+      });
+    return () => (mounted = false);
+  }, []);
+
+  // fallback if menuItems empty show a static fallback
+  const fallback = [
+    { title: "Breakfast", items: [{ name: "Pancakes with Syrup", price: 7 }, { name: "French Toast", price: 8 }] },
+    { title: "Main Course", items: [{ name: "Classic Cheeseburger", price: 11 }] }
+  ];
+
+  const toRender = menuItems.length ? menuItems : fallback;
+
   return (
     <section id="menu" className="p-5 md:p-10">
       <h2 className="text-2xl md:text-3xl mb-5 font-bold">Menu</h2>
       <div className="flex flex-col md:flex-row gap-8">
-        {[
-          { 
-            title: "Breakfast", 
-            items: [
-              { name: "Pancakes with Syrup", price: 7 },
-              { name: "French Toast", price: 8 },
-              { name: "Omelette with Cheese", price: 9 }
-            ]
-          },
-          { 
-            title: "Main Course", 
-            items: [
-              { name: "Classic Cheeseburger", price: 11 },
-              { name: "Grilled Chicken Sandwich", price: 10 },
-              { name: "Meatloaf with Mashed Potatoes", price: 13 }
-            ]
-          },
-          { 
-            title: "Desserts", 
-            items: [
-              { name: "Apple Pie", price: 5 },
-              { name: "Milkshake (Vanilla, Chocolate, Strawberry)", price: 6 },
-              { name: "Ice Cream Sundae", price: 5 }
-            ]
-          }
-        ].map((section, idx) => (
+        {toRender.map((section, idx) => (
           <div key={idx} className="bg-[#f5f5f5] p-4 rounded-lg flex-1">
             <h3 className="text-xl font-bold mb-2 border-b pb-2">{section.title}</h3>
             {section.items.map((item, i) => (
@@ -130,19 +149,30 @@ const Gallery = () => {
     const slides = slidesRef.current;
 
     if(addBtn && slides) {
-        addBtn.onclick = () => {
-        const images = slides.querySelectorAll("img");
-        const currentImg = images[indexRef.current];
+  addBtn.onclick = async () => {
+    const images = slides.querySelectorAll("img");
+    const currentImg = images[indexRef.current];
 
-        const item = {
-            name: currentImg.alt,
-            price: Number(currentImg.getAttribute("data-price"))
-        };
+    const item = {
+      // no menuItemId for these image-based items; ok to store name+price
+      name: currentImg.alt,
+      price: Number(currentImg.getAttribute("data-price")),
+      qty: 1
+    };
 
-        cartItemsStore.push(item);
-        if (window.renderCart) window.renderCart(); // rerender when item added
-        };
+    cartItemsStore.push(item);
+    // save to backend
+    try {
+      const cartId = getCartId();
+      await saveCart(cartId, cartItemsStore.map(i => ({ name: i.name, price: i.price, qty: i.qty })));
+    } catch (err) {
+      console.error("Failed to save cart", err);
     }
+
+    if (window.renderCart) window.renderCart(); // rerender when item added
+  };
+}
+
   }, []);
 
   return (
@@ -214,6 +244,24 @@ const Cart = () => {
             renderCart();
         };
     }
+
+    (async () => {
+    try {
+      const cid = localStorage.getItem("cartId");
+      if (cid) {
+        const data = await loadCart(cid);
+        if (data && data.items && data.items.length) {
+          // replace cartItemsStore content
+          cartItemsStore.length = 0;
+          data.items.forEach(it => cartItemsStore.push(it));
+          if (window.renderCart) window.renderCart();
+        }
+      }
+    } catch (err) {
+      console.error("Could not load cart from server", err);
+    }
+  })();
+
   }, []);
 
   function renderCart() {
