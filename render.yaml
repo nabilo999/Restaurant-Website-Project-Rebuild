@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: digital-restaurant-backend
+    env: node
+    buildCommand: cd backend && npm install
+    startCommand: cd backend && node server.js
+    envVars:
+      - key: MONGO_URI
+        scope: run
