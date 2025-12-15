@@ -8,12 +8,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Serve React static files from the build directory
-const buildPath = path.join(__dirname, "../build");
-console.log("Serving static files from:", buildPath);
-app.use(express.static(buildPath));
-
-// routes
+// routes first (before static files)
 const menuRoutes = require("./routes/menu");
 const ordersRoutes = require("./routes/orders");
 const cartsRoutes = require("./routes/Carts");
@@ -21,6 +16,11 @@ const cartsRoutes = require("./routes/Carts");
 app.use("/api/menu", menuRoutes);
 app.use("/api/orders", ordersRoutes);
 app.use("/api/carts", cartsRoutes);
+
+// Then serve React static files
+const buildPath = path.join(__dirname, "../build");
+console.log("Serving static files from:", buildPath);
+app.use(express.static(buildPath));
 
 // Catch-all route: serve React app for all other routes
 app.use((req, res) => {
