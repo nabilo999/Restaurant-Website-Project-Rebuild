@@ -10,7 +10,7 @@ app.use(express.json());
 // routes
 const menuRoutes = require("./routes/menu");
 const ordersRoutes = require("./routes/orders");
-const cartsRoutes = require("./routes/carts");
+const cartsRoutes = require("./routes/Carts");
 
 app.use("/api/menu", menuRoutes);
 app.use("/api/orders", ordersRoutes);
