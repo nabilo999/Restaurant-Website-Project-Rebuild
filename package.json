@@ -1,7 +1,7 @@
 {  "name": "digital-restaurant",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://nabilo999.github.io/Restaurant-Website-Project-Rebuild",
+  "homepage": ".",
   "dependencies": {
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
