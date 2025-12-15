@@ -61,57 +61,33 @@ const Banner = () => {
   );
 };
 
-const Menu = () => {
-  const [menuItems, setMenuItems] = useState([]);
-  useEffect(() => {
-    let mounted = true;
-    fetchMenu()
-      .then(items => {
-        if (!mounted) return;
-        // group items by category for the same visual structure
-        const grouped = {};
-        items.forEach(it => {
-          const cat = it.category || "Uncategorized";
-          if (!grouped[cat]) grouped[cat] = [];
-          grouped[cat].push(it);
-        });
-        // convert to array format used previously
-        const arr = Object.keys(grouped).map(cat => ({ title: cat, items: grouped[cat] }));
-        setMenuItems(arr);
-      })
-      .catch(err => {
-        console.error("Menu fetch error", err);
-        // fallback: keep original static menu if fetch fails
-      });
-    return () => (mounted = false);
-  }, []);
-
-  // fallback if menuItems empty show a static fallback
-  const fallback = [
-    { title: "Breakfast", items: [{ name: "Pancakes with Syrup", price: 7 }, { name: "French Toast", price: 8 }] },
-    { title: "Main Course", items: [{ name: "Classic Cheeseburger", price: 11 }] }
-  ];
-
-  const toRender = menuItems.length ? menuItems : fallback;
-
+const Menu = () =>{
   return (
-    <section id="menu" className="p-5 md:p-10">
-      <h2 className="text-2xl md:text-3xl mb-5 font-bold">Menu</h2>
-      <div className="flex flex-col md:flex-row gap-8">
-        {toRender.map((section, idx) => (
-          <div key={idx} className="bg-[#f5f5f5] p-4 rounded-lg flex-1">
-            <h3 className="text-xl font-bold mb-2 border-b pb-2">{section.title}</h3>
-            {section.items.map((item, i) => (
-              <p key={i} className="py-1 text-sm md:text-base">
-                {item.name} - ${item.price}
-              </p>
-            ))}
-          </div>
-        ))}
+  <section  id="menu" className="menu p-5 md:p-10">
+    <h2 className="text-2xl md:text-3xl mb-5 font-bold">Menu</h2>
+    <div className="menu-section flex flex-col md:flex-row gap-8">
+      <div className="bg-[#f5f5f5] p-4 rounded-lg flex-1">
+        <h3 className="text-xl font-bold mb-2">Breakfast</h3>
+        <p>Pancakes with Syrup - $7</p>
+        <p>French Toast - $8</p>
+        <p>Omelette with Cheese - $9</p>
       </div>
-    </section>
-  );
-};
+      <div className="bg-[#f5f5f5] p-4 rounded-lg flex-1">
+        <h3 className="text-xl font-bold mb-2">Main Course</h3>
+        <p>Classic Cheeseburger - $11</p>
+        <p>Grilled Chicken Sandwich - $10</p>
+        <p>Meatloaf with Mashed Potatoes - $13</p>
+      </div>
+      <div className="bg-[#f5f5f5] p-4 rounded-lg flex-1">
+        <h3 className="text-xl font-bold mb-2">Desserts</h3>
+        <p>Apple Pie - $5</p>
+        <p>Milkshake (Vanilla, Chocolate, Strawberry) - $6</p>
+        <p>Ice Cream Sundae - $5</p>
+      </div>
+    </div>
+  </section>
+  )
+}
 
 const cartItemsStore = []; 
 
