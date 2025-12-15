@@ -1,6 +1,6 @@
 {
   "files": {
-    "main.js": "/Restaurant-Website-Project-Rebuild/static/js/main.be8a3a5b.js",
+    "main.js": "/Restaurant-Website-Project-Rebuild/static/js/main.ac94fe84.js",
     "static/media/fries.png": "/Restaurant-Website-Project-Rebuild/static/media/fries.dbd8c54daf58f398b97e.png",
     "static/media/pie.png": "/Restaurant-Website-Project-Rebuild/static/media/pie.91fe612307f8f23aa7b7.png",
     "static/media/coffee.png": "/Restaurant-Website-Project-Rebuild/static/media/coffee.5cefba4ac818653d79e1.png",
@@ -10,9 +10,9 @@
     "static/media/banner2.jpg": "/Restaurant-Website-Project-Rebuild/static/media/banner2.be222b459100941f598e.jpg",
     "static/media/logo3.png": "/Restaurant-Website-Project-Rebuild/static/media/logo3.9c22c58ebfa173bcd75a.png",
     "index.html": "/Restaurant-Website-Project-Rebuild/index.html",
-    "main.be8a3a5b.js.map": "/Restaurant-Website-Project-Rebuild/static/js/main.be8a3a5b.js.map"
+    "main.ac94fe84.js.map": "/Restaurant-Website-Project-Rebuild/static/js/main.ac94fe84.js.map"
   },
   "entrypoints": [
-    "static/js/main.be8a3a5b.js"
+    "static/js/main.ac94fe84.js"
   ]
 }
