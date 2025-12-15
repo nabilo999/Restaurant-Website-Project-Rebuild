@@ -8,8 +8,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Serve React static files
-app.use(express.static(path.join(__dirname, "../build")));
+// Serve React static files from the build directory
+const buildPath = path.join(__dirname, "../build");
+console.log("Serving static files from:", buildPath);
+app.use(express.static(buildPath));
 
 // routes
 const menuRoutes = require("./routes/menu");
@@ -20,9 +22,9 @@ app.use("/api/menu", menuRoutes);
 app.use("/api/orders", ordersRoutes);
 app.use("/api/carts", cartsRoutes);
 
-// Serve React app for all other routes
-app.get((req, res) => {
-  res.sendFile(path.join(__dirname, "../build/index.html"));
+// Catch-all route: serve React app for all other routes
+app.use((req, res) => {
+  res.sendFile(path.join(buildPath, "index.html"));
 });
 
 const PORT = process.env.PORT || 5000;
